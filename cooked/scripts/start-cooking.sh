@@ -12,5 +12,6 @@ date +%s > "/tmp/paella-$SESSION_ID-start" 2>/dev/null
 : > "/tmp/paella-$SESSION_ID-ops.log" 2>/dev/null
 : > "/tmp/paella-$SESSION_ID-errors.log" 2>/dev/null
 : > "/tmp/paella-$SESSION_ID-subagents.log" 2>/dev/null
+: > "/tmp/paella-$SESSION_ID-files.log" 2>/dev/null
 
 exit 0

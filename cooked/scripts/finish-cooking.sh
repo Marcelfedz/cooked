@@ -10,6 +10,7 @@ SESSION_ID=$(printf '%s' "$input" | sed -n 's/.*"session_id"[[:space:]]*:[[:spac
 OPS_FILE="/tmp/paella-$SESSION_ID-ops.log"
 ERR_FILE="/tmp/paella-$SESSION_ID-errors.log"
 SUBA_FILE="/tmp/paella-$SESSION_ID-subagents.log"
+FILES_FILE="/tmp/paella-$SESSION_ID-files.log"
 START_FILE="/tmp/paella-$SESSION_ID-start"
 MARKER="/tmp/paella-cooking-$SESSION_ID"
 
@@ -55,9 +56,28 @@ else
     BODY="${OPS} ops · ${ELAPSED_FMT} · ${ICON}"
 fi
 
+# Long-turn extras: files modified count + finish timestamp. These are only
+# rendered on the sticky alert (you walked away — give yourself more context).
+FILES_TOUCHED=0
+[ -f "$FILES_FILE" ] && FILES_TOUCHED=$(sort -u "$FILES_FILE" 2>/dev/null | sed '/^$/d' | wc -l | tr -d ' ')
+[ -z "$FILES_TOUCHED" ] && FILES_TOUCHED=0
+
+NOW_HM=$(date +"%H:%M")
+
+if [ "$FILES_TOUCHED" -gt 0 ]; then
+    if [ "$FILES_TOUCHED" -eq 1 ]; then
+        FILE_LABEL="file"
+    else
+        FILE_LABEL="files"
+    fi
+    EXTRA="${FILES_TOUCHED} ${FILE_LABEL} modified · finished ${NOW_HM}"
+else
+    EXTRA="finished ${NOW_HM}"
+fi
+
 # Clean up state files now (before notification, so even if osascript hangs
 # the next turn starts fresh).
-rm -f "$MARKER" "$OPS_FILE" "$ERR_FILE" "$SUBA_FILE" "$START_FILE" 2>/dev/null
+rm -f "$MARKER" "$OPS_FILE" "$ERR_FILE" "$SUBA_FILE" "$FILES_FILE" "$START_FILE" 2>/dev/null
 
 ICON_PATH="${CLAUDE_PLUGIN_ROOT}/assets/cooked.jpeg"
 
@@ -65,7 +85,8 @@ if [ $ELAPSED -ge $THRESHOLD ] && command -v osascript >/dev/null 2>&1; then
     # Long turn — sticky modal alert, requires click to dismiss
     # (osascript display alert is the only macOS primitive that's reliably sticky)
     osascript >/dev/null 2>&1 <<EOF &
-display alert "Claude Code 🥘" message "Cooked! — ${BODY}" as informational
+display alert "Claude Code 🥘" message "Cooked! — ${BODY}
+${EXTRA}" as informational
 EOF
     disown 2>/dev/null
 elif command -v terminal-notifier >/dev/null 2>&1; then
