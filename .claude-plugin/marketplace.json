@@ -1,0 +1,14 @@
+{
+  "name": "cooked",
+  "owner": {
+    "name": "Marcel"
+  },
+  "description": "Are you cooked staring at Claude Code? Live progress meter and adaptive finish notifications so you can stop babysitting.",
+  "plugins": [
+    {
+      "name": "cooked",
+      "source": "./cooked",
+      "description": "Stop babysitting Claude. Live progress meter while Claude cooks, smart finish notifications that know whether you walked away."
+    }
+  ]
+}

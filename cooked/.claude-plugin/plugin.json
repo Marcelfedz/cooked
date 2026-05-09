@@ -1,0 +1,8 @@
+{
+  "name": "cooked",
+  "version": "2.0.0",
+  "description": "Stop babysitting Claude. Live progress meter while Claude cooks, smart finish notifications that know whether you walked away.",
+  "author": {
+    "name": "Marcel"
+  }
+}
