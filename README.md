@@ -1,4 +1,31 @@
-# 🥘 cooked
+<!-- TODO: replace the Twemoji src below with assets/cooked.png once you have a custom hero image -->
+
+<div align="center">
+
+<img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@v14.0.2/assets/svg/1f958.svg" width="160" height="160" alt="cooked" />
+
+<h1>cooked</h1>
+
+<p><em>Stop babysitting Claude.</em></p>
+
+<p>
+<img alt="GitHub stars" src="https://img.shields.io/github/stars/Marcelfedz/cooked?style=flat-square" />
+<img alt="Last commit" src="https://img.shields.io/github/last-commit/Marcelfedz/cooked?style=flat-square" />
+<img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square" />
+<img alt="Platform: macOS · Linux" src="https://img.shields.io/badge/platform-macOS%20%C2%B7%20Linux-blue?style=flat-square" />
+</p>
+
+<p>
+<a href="#demo">Demo</a> ·
+<a href="#install">Install</a> ·
+<a href="#what-it-does">What it does</a> ·
+<a href="#how-it-works">How it works</a> ·
+<a href="#faq">FAQ</a>
+</p>
+
+</div>
+
+---
 
 > **Are you cooked staring at the screen, waiting for Claude to finish?**
 
@@ -19,7 +46,7 @@ If you've ever said *"I'm so cooked from waiting on Claude"*, this is for you.
 
 ---
 
-## What you actually see
+## Demo
 
 **While Claude is cooking** — your status line shows a live activity meter so you know it's still moving:
 
@@ -56,9 +83,9 @@ The ✅ / ❌ icon at the end tells you whether everything went smoothly or ther
 
 ---
 
-## Install — one line, copy-paste
+## Install
 
-**macOS / Linux:**
+**One line — copy, paste, restart Claude Code:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Marcelfedz/cooked/main/install.sh | bash
@@ -71,14 +98,44 @@ claude plugin marketplace add Marcelfedz/cooked
 claude plugin install cooked@cooked
 ```
 
-Then **restart Claude Code**. That's it. You're done.
+That's it. You're done.
+
+---
+
+## What it does
+
+Three things, all aimed at the same pain:
+
+| | What it does | Why you'll like it |
+|---|---|---|
+| 🔥 **Live progress meter** | Counts every tool call and active sub-agent in real time, ticking up at the bottom of your terminal | One glance tells you if Claude is still working or wedged |
+| 🥘 **Rich finish notification** | Replaces the boring "Response ready" with a real summary: ops · cooks · duration · ✅/❌ | Decide from the banner whether you need to come back |
+| 📣 **Adaptive alert level** | Quiet banner under 2 min · sticky modal alert over 2 min | Walk away from long jobs without missing the finish |
+
+---
+
+## How it works
+
+`cooked` is a Claude Code plugin that wires six hook events:
+
+| Event | What we do |
+|---|---|
+| `UserPromptSubmit` | Note the start time, reset stat counters |
+| `PostToolUse` | Append a tally line to `ops.log` |
+| `PostToolUseFailure` | Append a tally line to `errors.log` |
+| `SubagentStart` / `SubagentStop` | Track active sub-agents (the "cooks") |
+| `Stop` | Read all stats, format the summary, fire the right notification, clean up |
+
+The status line script reads those same files every second and renders the live meter. State is stored in `/tmp/paella-<session-id>-*` — scoped per session, automatically cleaned up.
+
+The whole plugin is ~150 lines of Bash. No external dependencies, no Python, no Node. Just the tools every Mac and Linux box already ships with.
 
 ---
 
 ## FAQ
 
 **Q: I'm not very technical. Is this safe?**
-Yes. `cooked` is open-source — every line of code is here in this repo for anyone to read. It only does three things: count tool calls Claude makes, time how long each turn takes, and show macOS notifications. It never sends your data anywhere. The installer makes a backup of your settings before changing anything.
+Yes. `cooked` is open-source — every line of code is here in this repo. It only does three things: count tool calls Claude makes, time how long each turn takes, and show macOS notifications. It never sends your data anywhere. The installer makes a backup of your settings before changing anything.
 
 **Q: Will this slow Claude down?**
 No. The progress tracking adds about 10 milliseconds per tool call — completely invisible. The status line refreshes once a second, lighter than your average system clock.
@@ -110,24 +167,6 @@ Two reasons. One: when Claude finishes a task, it's *cooked* — like food that'
 | `COOKED_REPO` | `Marcelfedz/cooked` | Override the GitHub repo the installer pulls from (for forks). |
 
 Set them in your shell profile (`~/.zshrc`, `~/.bashrc`).
-
----
-
-## How it works under the hood (for the curious)
-
-`cooked` is a Claude Code plugin that wires six hook events:
-
-| Event | What we do |
-|---|---|
-| `UserPromptSubmit` | Note the start time, reset stat counters |
-| `PostToolUse` | Append a tally line to `ops.log` |
-| `PostToolUseFailure` | Append a tally line to `errors.log` |
-| `SubagentStart` / `SubagentStop` | Track active sub-agents (the "cooks") |
-| `Stop` | Read all stats, format the summary, fire the right notification, clean up |
-
-The status line script reads those same files every second and renders the live meter. State is stored in `/tmp/paella-<session-id>-*` — scoped per session, automatically cleaned up.
-
-The whole plugin is ~150 lines of Bash. No external dependencies, no Python, no Node. Just the tools every Mac and Linux box already ships with.
 
 ---
 
@@ -164,4 +203,6 @@ MIT. Use it, fork it, ship it. See [`LICENSE`](./LICENSE).
 
 ---
 
-*"Caveman saves your tokens. cooked saves your attention."*
+<div align="center">
+<sub><em>"Caveman saves your tokens. cooked saves your attention."</em></sub>
+</div>
