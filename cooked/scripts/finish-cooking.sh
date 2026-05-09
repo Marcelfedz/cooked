@@ -59,24 +59,37 @@ fi
 # the next turn starts fresh).
 rm -f "$MARKER" "$OPS_FILE" "$ERR_FILE" "$SUBA_FILE" "$START_FILE" 2>/dev/null
 
-if command -v osascript >/dev/null 2>&1; then
-    if [ $ELAPSED -lt $THRESHOLD ]; then
-        # Short turn — quiet banner, auto-dismiss
-        osascript >/dev/null 2>&1 <<EOF &
-display notification "${BODY}" with title "Claude Code" subtitle "Cooked!" sound name "Ping"
-EOF
-    else
-        # Long turn — sticky modal alert, requires click to dismiss
-        osascript >/dev/null 2>&1 <<EOF &
+ICON_PATH="${CLAUDE_PLUGIN_ROOT}/assets/cooked.jpeg"
+
+if [ $ELAPSED -ge $THRESHOLD ] && command -v osascript >/dev/null 2>&1; then
+    # Long turn — sticky modal alert, requires click to dismiss
+    # (osascript display alert is the only macOS primitive that's reliably sticky)
+    osascript >/dev/null 2>&1 <<EOF &
 display alert "Claude Code 🥘" message "Cooked! — ${BODY}" as informational
 EOF
+    disown 2>/dev/null
+elif command -v terminal-notifier >/dev/null 2>&1; then
+    # Short turn (or fallback) — branded banner via terminal-notifier
+    # (lets us set a custom paella appIcon instead of the Script Editor default)
+    if [ -f "$ICON_PATH" ]; then
+        terminal-notifier -title "Claude Code" -subtitle "Cooked!" -message "$BODY" \
+            -appIcon "$ICON_PATH" -sound Ping >/dev/null 2>&1 &
+    else
+        terminal-notifier -title "Claude Code" -subtitle "Cooked!" -message "$BODY" \
+            -sound Ping >/dev/null 2>&1 &
     fi
+    disown 2>/dev/null
+elif command -v osascript >/dev/null 2>&1; then
+    # Short turn fallback — vanilla osascript banner (Script Editor icon)
+    osascript >/dev/null 2>&1 <<EOF &
+display notification "${BODY}" with title "Claude Code" subtitle "Cooked!" sound name "Ping"
+EOF
     disown 2>/dev/null
 elif command -v notify-send >/dev/null 2>&1; then
     if [ $ELAPSED -lt $THRESHOLD ]; then
-        notify-send "Claude Code" "Cooked! — ${BODY}" 2>/dev/null
+        notify-send -i "$ICON_PATH" "Claude Code" "Cooked! — ${BODY}" 2>/dev/null
     else
-        notify-send -u critical "Claude Code" "Cooked! — ${BODY}" 2>/dev/null
+        notify-send -u critical -i "$ICON_PATH" "Claude Code" "Cooked! — ${BODY}" 2>/dev/null
     fi
 fi
 

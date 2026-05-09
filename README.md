@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/cooked.jpeg" width="220" alt="cooked" />
+<img src="./cooked/assets/cooked.jpeg" width="220" alt="cooked" />
 
 <h1>cooked</h1>
 
@@ -165,6 +165,16 @@ Two reasons. One: when Claude finishes a task, it's *cooked* — like food that'
 | `COOKED_REPO` | `Marcelfedz/cooked` | Override the GitHub repo the installer pulls from (for forks). |
 
 Set them in your shell profile (`~/.zshrc`, `~/.bashrc`).
+
+### Branded notification icon (optional)
+
+By default macOS shows the *Script Editor* icon on banners (it's the AppleScript host — Apple doesn't let `osascript` change it). To get the actual paella icon on your banners, install [terminal-notifier](https://github.com/julienXX/terminal-notifier):
+
+```bash
+brew install terminal-notifier
+```
+
+`cooked` auto-detects it and switches to it for short-turn banners with the bundled paella as `-appIcon`. Long-turn sticky alerts still use `osascript` (it's the only reliable sticky primitive on macOS).
 
 ---
 
