@@ -10,9 +10,12 @@ SESSION_ID=$(printf '%s' "$input" | sed -n 's/.*"session_id"[[:space:]]*:[[:spac
 
 printf '.\n' >> "/tmp/paella-$SESSION_ID-ops.log" 2>/dev/null
 
+# Track tool name per call so the long-turn alert can show the tool mix.
+TOOL=$(printf '%s' "$input" | sed -n 's/.*"tool_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+[ -n "$TOOL" ] && printf '%s\n' "$TOOL" >> "/tmp/paella-$SESSION_ID-tools.log" 2>/dev/null
+
 # Track unique files touched by Edit/Write/MultiEdit. file_path is the
 # top-level field in tool_input for all three.
-TOOL=$(printf '%s' "$input" | sed -n 's/.*"tool_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
 case "$TOOL" in
     Edit|Write|MultiEdit)
         FILE=$(printf '%s' "$input" | sed -n 's/.*"file_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
