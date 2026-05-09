@@ -1,8 +1,6 @@
-<!-- TODO: replace the Twemoji src below with assets/cooked.png once you have a custom hero image -->
-
 <div align="center">
 
-<img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@v14.0.2/assets/svg/1f958.svg" width="160" height="160" alt="cooked" />
+<img src="./assets/cooked.jpeg" width="220" alt="cooked" />
 
 <h1>cooked</h1>
 
