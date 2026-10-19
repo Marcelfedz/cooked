@@ -3,12 +3,12 @@
   "owner": {
     "name": "Marcel"
   },
-  "description": "Are you cooked staring at Claude Code? Live progress meter and adaptive finish notifications so you can stop babysitting.",
+  "description": "Are you cooked staring at Claude Code? Each terminal gets a name, a live progress bar and a paella cooking above the prompt; /cooked shows every terminal at once.",
   "plugins": [
     {
       "name": "cooked",
       "source": "./cooked",
-      "description": "Stop babysitting Claude. Live progress meter while Claude cooks, smart finish notifications that know whether you walked away."
+      "description": "Stop babysitting Claude. A mod: per-terminal band with name, progress bar and pixel-art paella, a kitchen pane across terminals, and finish notifications that know whether you walked away."
     }
   ]
 }
