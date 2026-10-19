@@ -1,8 +1,7 @@
 {
   "name": "cooked",
-  "version": "2.0.0",
-  "description": "Stop babysitting Claude. Live progress meter while Claude cooks, smart finish notifications that know whether you walked away.",
-  "author": {
-    "name": "Marcel"
-  }
+  "version": "3.0.0",
+  "description": "Stop babysitting Claude. Each terminal gets a name, a live progress bar and a paella cooking above the prompt; /cooked opens the kitchen with every terminal at once.",
+  "author": { "name": "Marcel" },
+  "types": "./types/index.d.ts"
 }

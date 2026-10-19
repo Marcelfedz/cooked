@@ -14,9 +14,9 @@
 </p>
 
 <p>
-<a href="#demo">Demo</a> ·
+<a href="#what-you-see">What you see</a> ·
 <a href="#install">Install</a> ·
-<a href="#what-it-does">What it does</a> ·
+<a href="#how-the-bar-knows">How the bar knows</a> ·
 <a href="#how-it-works">How it works</a> ·
 <a href="#faq">FAQ</a>
 </p>
@@ -27,133 +27,133 @@
 
 > **Are you cooked staring at the screen, waiting for Claude to finish?**
 
-You shouldn't have to babysit Claude Code.
+You run three Claude Code terminals. One is refactoring, one is writing tests, one finished ten minutes ago and you didn't notice. `cooked` gives each terminal a name, a live progress bar and a paella that cooks while Claude works. One command shows every terminal at once.
 
-`cooked` is a tiny extension for [Claude Code](https://docs.claude.com/en/docs/claude-code) that adds two things to your terminal:
-
-1. **A live progress meter** at the bottom of the window — so you can see at a glance whether Claude is still cooking or stuck.
-2. **A smart finish notification** that tells you exactly what got done, and grabs your attention loudly when you've walked away.
+v3 is a Claude Code **mod**: function hooks that draw straight into Claude Code's interface. No status-line script, no `/tmp` files, no settings patching.
 
 ---
 
-## The pain we're solving
+## What you see
 
-You ask Claude to build something. It starts working. Two minutes pass. You glance over — still going. You grab coffee. You come back. Five more minutes. Was it stuck? Did it finish 30 seconds ago and you've been staring at nothing?
-
-If you've ever said *"I'm so cooked from waiting on Claude"*, this is for you.
-
----
-
-## Demo
-
-**While Claude is cooking** — your status line shows a live activity meter so you know it's still moving:
+**Above the prompt, in every terminal** — its name, a progress bar, what it is doing right now, and a pixel-art paella with flames and steam:
 
 ```
-🔥 🥘 12 ops · 2 cooks · 2m14s  ·  opus 4.7
+[paella]  marshall  ━━━━━━━━━━━━━━━━━━━━╸─────────────────  3/7
+          ▸ Writing the kitchen pane
+          14 ops · 2 cooks · 1m 20s · editing register.tsx
+          "upgrade cooked into a mod with a paella"
 ```
 
-> *12 tools used · 2 sub-agents working in parallel · 2 minutes 14 seconds elapsed*
+The paella sits on the left: a round pan seen from above, six rows tall, flames licking its lower edge and steam rising while Claude works. The rice goes from saffron to golden as the work advances. Peas go in first, then peppers, prawns and mussels; the socarrat darkens the edge; the lemon only when it's done.
 
-**When Claude finishes a quick task** — you get a soft banner that auto-dismisses:
-
-```
-┌────────────────────────────────────────┐
-│ Claude Code                            │
-│ Cooked!                                │
-│ 9 ops · 35s · ✅                       │
-└────────────────────────────────────────┘
-```
-
-**When Claude finishes a long task (≥ 2 min — you probably walked away)** — you get a **sticky alert** that won't go away until you click it. So you can leave the room and never miss the finish:
+**At the foot of the band, the session line** (in the theme's blue) with the session's figures:
 
 ```
-╭───────────────────────────────────────╮
-│           Claude Code 🥘              │
-│                                       │
-│  Cooked! — 47 ops · 3 cooks · 6m12s   │
-│                  · ✅                 │
-│                                       │
-│                  [ OK ]               │
-╰───────────────────────────────────────╯
+opus 5.5 · context ███░░░░░░░ 34% · ↑1.2M ↓84k tokens · session 1h 05m · 5h limit 42%
 ```
 
-The ✅ / ❌ icon at the end tells you whether everything went smoothly or there were errors — so you can decide whether to come back urgently or finish your coffee.
+Model, how full the context window is (a bar, with `near full` from 80%, when compaction is close), the tokens the session has spent (input with cache reads and writes, and output, every turn and subagent summed), how long the session has been open, and your usage limits (on a subscription) or the cost so far (with an API key).
+
+<img src="./cooked/assets/paella.png" alt="The paella at five stages of doneness, and the bars" />
+
+**`/cooked` opens the kitchen** — a pane with every terminal on the machine running cooked:
+
+```
+Kitchen
+3 terminals · 2 cooking
+
+marshall  this terminal
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸─────────────────────  3/7 · 14 ops · 1m 20s
+▸ Writing the kitchen pane
+
+api  shop-backend
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  cooked in 4m 02s · 61 ops
+
+tests  shop-frontend
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  9 ops · 0m 41s
+▸ $ npm test
+```
+
+`/cooked name api` renames the terminal you're in. The default name is the project folder.
+
+**When a turn finishes** — the same notification as v2, now naming the terminal: a banner under 2 minutes, a sticky alert you have to click past over 2 minutes, with what was asked, the folders touched and the tool mix. ✅ or ❌ says whether any tool failed.
 
 ---
 
 ## Install
 
-**One line — copy, paste, restart Claude Code:**
+From a Claude Code prompt:
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/Marcelfedz/cooked/main/install.sh | bash
+```
+/plugin install cooked --marketplace Marcelfedz/cooked
 ```
 
-**Or via the Claude Code marketplace:**
+Or from a shell:
 
 ```bash
 claude plugin marketplace add Marcelfedz/cooked
 claude plugin install cooked@cooked
 ```
 
-That's it. You're done.
+Coming from v2? Run the installer once; it updates the plugin and removes the v2 status-line script from `~/.claude/settings.json` (backup first, at `~/.claude/settings.json.before-cooked`):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Marcelfedz/cooked/main/install.sh | bash
+```
+
+Needs a Claude Code build with function-hook mods. Built and tested on 2.1.302.
 
 ---
 
-## What it does
+## How the bar knows
 
-Three things, all aimed at the same pain:
+Claude Code has no idea how long a task will take, so a percentage based on time would be invented. `cooked` doesn't invent one.
 
-| | What it does | Why you'll like it |
-|---|---|---|
-| 🔥 **Live progress meter** | Counts every tool call and active sub-agent in real time, ticking up at the bottom of your terminal | One glance tells you if Claude is still working or wedged |
-| 🥘 **Rich finish notification** | Replaces the boring "Response ready" with a real summary: ops · cooks · duration · ✅/❌ | Decide from the banner whether you need to come back |
-| 📣 **Adaptive alert level** | Quiet banner under 2 min · sticky modal alert over 2 min | Walk away from long jobs without missing the finish |
+- **When Claude keeps a task list** (`TodoWrite`, or `TaskCreate` / `TaskUpdate`), the bar is the real share of steps completed, `3/7`, and the line under it is the step in progress.
+- **When it keeps none**, the band says `no task list` and the bar is a pulse sweeping the track: alive, but claiming nothing. The line under it says what the last tool call did (`$ npm test`, `editing register.tsx`, `briefing a cook: Explore the repo`).
+
+Most quick turns don't make a list, and some Claude Code setups don't offer those tools to the model at all, so the pulse is the common case. `cooked` never asks Claude to make a list: it adds no tool and no text to the prompt, so it costs **zero extra tokens**. It only reads what Claude does anyway.
+
+The paella is decoration and is allowed to guess: without a plan it browns slowly with time, and it never finishes before the turn does.
 
 ---
 
 ## How it works
 
-`cooked` is a Claude Code plugin that wires six hook events:
+One hooks module, `cooked/hooks/register.tsx`, on the mod API:
 
-| Event | What we do |
+| Event | What cooked does |
 |---|---|
-| `UserPromptSubmit` | Note the start time, reset stat counters |
-| `PostToolUse` | Append a tally line to `ops.log` |
-| `PostToolUseFailure` | Append a tally line to `errors.log` |
-| `SubagentStart` / `SubagentStop` | Track active sub-agents (the "cooks") |
-| `Stop` | Read all stats, format the summary, fire the right notification, clean up |
+| `turn.start` | A new dish: the prompt, the start time, counters reset. A subagent's turn counts as a cook. |
+| `tool.call` | Counts the op, names the activity, tracks edited files; after `TodoWrite` / `TaskCreate` / `TaskUpdate`, updates the plan. Never blocks a call. |
+| `turn.complete` | Marks it cooked, adds the turn's tokens to the session's tally and sends the notification. |
+| `ui.render` `AbovePrompt` | Draws the band. The paella and the bars are `Raster` cells (half-block pixel art), animated with `$.ui.blit`. |
+| `ui.render` `Pane` | Draws the kitchen. |
+| `command.run` `cooked` | Opens or closes the kitchen; `name` renames the terminal. |
+| Session line | The last row of the band, in the theme's blue, from `$.session.usage()` (context, limits, cost, session start) and the token tally. Once a second while cooking, every 15 s otherwise. |
 
-The status line script reads those same files every second and renders the live meter. State is stored in `/tmp/paella-<session-id>-*` — scoped per session, automatically cleaned up.
+State lives in `$.state`, so a reload of the mod keeps it. For the kitchen, each session writes one small JSON file to `~/.claude/cooked/kitchen/<session-id>.json` (a heartbeat every 15 s, removed at session end, files older than 12 h pruned); the pane reads the folder once a second. Nothing leaves the machine.
 
-The whole plugin is ~150 lines of Bash. No external dependencies, no Python, no Node. Just the tools every Mac and Linux box already ships with.
+`node tools/paella-preview.ts` renders the pixel art to a PNG, for tweaking the recipe.
 
 ---
 
 ## FAQ
 
-**Q: I'm not very technical. Is this safe?**
-Yes. `cooked` is open-source — every line of code is here in this repo. It only does three things: count tool calls Claude makes, time how long each turn takes, and show macOS notifications. It never sends your data anywhere. The installer makes a backup of your settings before changing anything.
+**Q: Is this safe?**
+Yes. Every line is in this repo. It counts tool calls, times turns, writes one JSON file per open session under `~/.claude/cooked/`, and shows macOS or Linux notifications. It never sends data anywhere.
 
-**Q: Will this slow Claude down?**
-No. The progress tracking adds about 10 milliseconds per tool call — completely invisible. The status line refreshes once a second, lighter than your average system clock.
+**Q: Will it slow Claude down?**
+No. A tool call costs a couple of in-memory state writes. The animation repaints a few dozen cells at about seven frames a second, only while something cooks or the kitchen is open.
 
-**Q: How do I remove it?**
+**Q: Can I turn off the band?**
+`ctrl+x ctrl+a` (or the `[-]` beside it) collapses it, as with any band above the prompt.
 
-```bash
-bash ~/.claude/plugins/marketplaces/cooked/uninstall.sh
-```
-
-That's it — your original settings are restored from the backup.
-
-**Q: Does it work on Windows?**
-The progress meter works everywhere. Notifications are macOS-first (using the built-in notification system), with basic Linux support via `notify-send`. Windows notifications are coming in a later release.
-
-**Q: Will it interfere with other Claude Code plugins or hooks?**
-No. `cooked` adds its hooks alongside whatever you already have — nothing gets replaced. The only setting it touches is your status line, and only with your existing setup backed up.
+**Q: Does it work outside the terminal?**
+The desktop app draws the same band and kitchen with text bars (it has no pixel cells, so no paella). Notifications are macOS-first, `notify-send` on Linux, Claude Code's own channel elsewhere.
 
 **Q: Why "cooked"?**
-Two reasons. One: when Claude finishes a task, it's *cooked* — like food that's done. Two: when you're staring at a long-running terminal, *you're* cooked — exhausted from the wait. The name covers both ends of the experience.
+When Claude finishes a task, it's *cooked*. When you've been staring at a long-running terminal, *you're* cooked. The paella covers both.
 
 ---
 
@@ -161,47 +161,33 @@ Two reasons. One: when Claude finishes a task, it's *cooked* — like food that'
 
 | Env var | Default | What it does |
 |---|---|---|
-| `COOKED_ALERT_THRESHOLD` (or `PAELLA_ALERT_THRESHOLD`) | `120` | Seconds. Turns longer than this get a sticky modal alert instead of a banner. Lower = louder. |
-| `COOKED_REPO` | `Marcelfedz/cooked` | Override the GitHub repo the installer pulls from (for forks). |
+| `COOKED_ALERT_THRESHOLD` (or `PAELLA_ALERT_THRESHOLD`) | `120` | Seconds. Turns longer than this get a sticky alert instead of a banner. |
+| `COOKED_NOTIFY` | on | `off` silences the finish notifications; the band and kitchen stay. |
+| `COOKED_REPO` | `Marcelfedz/cooked` | The repo `install.sh` pulls from (for forks). |
 
-Set them in your shell profile (`~/.zshrc`, `~/.bashrc`).
-
-### Branded notification icon (optional)
-
-By default macOS shows the *Script Editor* icon on banners (it's the AppleScript host — Apple doesn't let `osascript` change it). To get the actual paella icon on your banners, install [terminal-notifier](https://github.com/julienXX/terminal-notifier):
-
-```bash
-brew install terminal-notifier
-```
-
-`cooked` auto-detects it and switches to it for short-turn banners with the bundled paella as `-appIcon`. Long-turn sticky alerts still use `osascript` (it's the only reliable sticky primitive on macOS).
+**Branded banner icon (optional, macOS).** With [terminal-notifier](https://github.com/julienXX/terminal-notifier) installed (`brew install terminal-notifier`), banners carry the paella icon instead of Script Editor's.
 
 ---
 
 ## Platform support
 
-| | Status line | Quick banner | Sticky alert |
+| | Band + kitchen | Quick banner | Sticky alert |
 |---|---|---|---|
 | macOS | ✅ | ✅ | ✅ |
 | Linux | ✅ | ✅ via `notify-send` | ⚠️ urgent persistent (closest available) |
-| Windows | ✅ | ❌ planned | ❌ planned |
+| Windows | ✅ | via Claude Code's notification channel | ❌ |
 
 ---
 
 ## Uninstall
 
 ```bash
-bash ~/.claude/plugins/marketplaces/cooked/uninstall.sh
-```
-
-Or manually:
-
-```bash
 claude plugin uninstall cooked
 claude plugin marketplace remove cooked
-cp ~/.claude/settings.json.before-cooked ~/.claude/settings.json
-rm -rf ~/.claude/plugins/marketplaces/cooked
+rm -rf ~/.claude/cooked
 ```
+
+If you installed with `install.sh`, `bash ~/.claude/plugins/marketplaces/cooked/uninstall.sh` does all of it and restores the settings backup.
 
 ---
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# cooked uninstaller. Disables the plugin, restores settings.json from the
-# backup created by install.sh, and removes the marketplace clone.
+# cooked uninstaller. Uninstalls the plugin, restores settings.json from the
+# backup install.sh made (if any), and removes the marketplace clone and the
+# kitchen files.
 
 set -euo pipefail
 
@@ -28,7 +29,8 @@ if [ -d "$DEST" ]; then
     rm -rf "$DEST"
 fi
 
-# Best-effort cleanup of any leftover /tmp state files
-rm -f /tmp/paella-cooking-* /tmp/paella-*-{start,ops.log,errors.log,subagents.log} 2>/dev/null || true
+# The kitchen (v3) and any v2 leftovers in /tmp
+rm -rf "$HOME/.claude/cooked" 2>/dev/null || true
+rm -f /tmp/paella-cooking-* /tmp/paella-*-{start,ops.log,errors.log,subagents.log,files.log,tools.log,prompt} 2>/dev/null || true
 
 echo "✅ cooked uninstalled. Restart Claude Code."
